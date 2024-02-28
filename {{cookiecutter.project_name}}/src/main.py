@@ -6,6 +6,13 @@ import plotly.graph_objs as go
 # Streamlit 페이지 설정
 st.set_page_config(layout="wide")  # 페이지를 wide 모드로 설정
 
+# HTML 메타 태그를 사용하여 페이지를 10초마다 자동 새로고침
+st.markdown(
+"""
+<meta http-equiv="refresh" content="10">
+""",
+unsafe_allow_html=True
+)
 # 사이드바를 숨기는 CSS
 hide_sidebar_style = """
         <style>
