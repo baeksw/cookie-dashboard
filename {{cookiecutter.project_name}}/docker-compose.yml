@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  dash:
+    build: ./src
+    command: streamlit run --server.address=0.0.0.0 --server.port=8000 main.py
+    volumes:
+      - ./src:/app
+    ports:
+      - "8000:8000"
