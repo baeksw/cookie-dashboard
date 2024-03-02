@@ -1,0 +1,254 @@
+[
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "streamlit",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "streamlit",
+        "description": "streamlit",
+        "detail": "streamlit",
+        "documentation": {}
+    },
+    {
+        "label": "requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests",
+        "description": "requests",
+        "detail": "requests",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "plotly.graph_objs",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "plotly.graph_objs",
+        "description": "plotly.graph_objs",
+        "detail": "plotly.graph_objs",
+        "documentation": {}
+    },
+    {
+        "label": "get_market_codes",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.main",
+        "description": "{{cookiecutter.project_name}}.src.main",
+        "peekOfCode": "def get_market_codes():\n    url = \"https://api.upbit.com/v1/market/all\"\n    response = requests.get(url)\n    market_data = response.json()\n    market_codes = [market['market'] for market in market_data if market['market'].startswith('KRW')]  # KRW 마켓만 필터링\n    return market_codes\ndef get_ohlcv_from_upbit(ticket='KRW-BTC'):\n    url = f\"https://api.upbit.com/v1/candles/days\"\n    querystring = {\"market\": ticket, \"count\": \"1\"}\n    response = requests.request(\"GET\", url, params=querystring)",
+        "detail": "{{cookiecutter.project_name}}.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "get_ohlcv_from_upbit",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.main",
+        "description": "{{cookiecutter.project_name}}.src.main",
+        "peekOfCode": "def get_ohlcv_from_upbit(ticket='KRW-BTC'):\n    url = f\"https://api.upbit.com/v1/candles/days\"\n    querystring = {\"market\": ticket, \"count\": \"1\"}\n    response = requests.request(\"GET\", url, params=querystring)\n    data = response.json()\n    return data\ndef get_ohlcv_list_from_upbit(ticket='KRW-BTC', length=1):\n    url = f\"https://api.upbit.com/v1/candles/days\"\n    querystring = {\"market\": ticket, \"count\": f\"{length}\"}\n    response = requests.request(\"GET\", url, params=querystring)",
+        "detail": "{{cookiecutter.project_name}}.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "get_ohlcv_list_from_upbit",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.main",
+        "description": "{{cookiecutter.project_name}}.src.main",
+        "peekOfCode": "def get_ohlcv_list_from_upbit(ticket='KRW-BTC', length=1):\n    url = f\"https://api.upbit.com/v1/candles/days\"\n    querystring = {\"market\": ticket, \"count\": f\"{length}\"}\n    response = requests.request(\"GET\", url, params=querystring)\n    data = response.json()\n    return data\ndef plot_candlestick_chart(ticket, length=20):\n    data = get_ohlcv_list_from_upbit(ticket, length=length)\n    if data:\n        df = pd.DataFrame(data)",
+        "detail": "{{cookiecutter.project_name}}.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "plot_candlestick_chart",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.main",
+        "description": "{{cookiecutter.project_name}}.src.main",
+        "peekOfCode": "def plot_candlestick_chart(ticket, length=20):\n    data = get_ohlcv_list_from_upbit(ticket, length=length)\n    if data:\n        df = pd.DataFrame(data)\n        fig = go.Figure(data=[go.Candlestick(x=df['candle_date_time_kst'],\n                        open=df['opening_price'],\n                        high=df['high_price'],\n                        low=df['low_price'],\n                        close=df['trade_price'])])\n        fig.update_layout(title=f\"{ticket} 캔들차트\", xaxis_title='날짜', yaxis_title='가격',",
+        "detail": "{{cookiecutter.project_name}}.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "plot_trend_daily",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.main",
+        "description": "{{cookiecutter.project_name}}.src.main",
+        "peekOfCode": "def plot_trend_daily(ticket):\n    data = get_ohlcv_from_upbit(ticket)\n    if data:\n        opening_price = data[0]['opening_price']\n        closing_price = data[0]['trade_price']\n        trend = closing_price - opening_price\n        fig = go.Figure()\n        fig.add_trace(go.Indicator(\n            mode=\"number+delta\",\n            value=closing_price,",
+        "detail": "{{cookiecutter.project_name}}.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "plot_day_max_min",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.main",
+        "description": "{{cookiecutter.project_name}}.src.main",
+        "peekOfCode": "def plot_day_max_min(ticket):\n    data = get_ohlcv_from_upbit(ticket)\n    if data:\n        fig = go.Figure()\n        fig.add_trace(go.Bar(x=['최고가', '최저가'],\n                             y=[data[0]['high_price'], data[0]['low_price']],\n                             marker_color=['green', 'red']))\n        fig.update_layout(title=f\"{ticket} 일일 최고가와 최저가\")\n        st.plotly_chart(fig, use_container_width=True)\ndef plot_volume_trend_daily(ticket):",
+        "detail": "{{cookiecutter.project_name}}.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "plot_volume_trend_daily",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.main",
+        "description": "{{cookiecutter.project_name}}.src.main",
+        "peekOfCode": "def plot_volume_trend_daily(ticket):\n    data = get_ohlcv_from_upbit(ticket)\n    if data:\n        high_price = data[0]['high_price']\n        low_price = data[0]['low_price']\n        volume = data[0]['candle_acc_trade_volume']\n        opening_price = data[0]['opening_price']\n        closing_price = data[0]['trade_price']\n        trend = \"상승\" if closing_price > opening_price else \"하락\"\n        card_html = \"\"\"",
+        "detail": "{{cookiecutter.project_name}}.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "plot_price_width_volume_current_trend",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.main",
+        "description": "{{cookiecutter.project_name}}.src.main",
+        "peekOfCode": "def plot_price_width_volume_current_trend(ticket):\n    data = get_ohlcv_from_upbit(ticket)\n    if data:\n        high_price = data[0]['high_price']\n        low_price = data[0]['low_price']\n        volume = data[0]['candle_acc_trade_volume']\n        fig = go.Figure(data=[\n            go.Bar(name='가격 범위', x=['최고가', '최저가'], y=[high_price, low_price]),\n            go.Bar(name='거래량', x=['거래량'], y=[volume])\n        ])",
+        "detail": "{{cookiecutter.project_name}}.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "display_show_table",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.main",
+        "description": "{{cookiecutter.project_name}}.src.main",
+        "peekOfCode": "def display_show_table(ticket):\n    # CSS를 사용하여 컬럼 너비 조정\n    st.markdown(\n        \"\"\"\n        <style>\n        .dataframe {\n            margin-top:10px;\n            width: 100%;\n        }\n        .dataframe th, .dataframe td {",
+        "detail": "{{cookiecutter.project_name}}.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.main",
+        "description": "{{cookiecutter.project_name}}.src.main",
+        "peekOfCode": "def main():\n    st.title(\"Day Trend\")\n    #ticket = st.text_input(\"티켓을 입력하세요\", value='KRW-BTC')\n    # 업비트에서 티켓 목록 가져오기\n    market_codes = get_market_codes()\n    current_idx = 0\n    for idx, value in enumerate(market_codes):\n        if DEFAULT_TICKER == value:\n            current_idx = idx\n    # 티켓 선택을 위한 드롭다운 메뉴 생성",
+        "detail": "{{cookiecutter.project_name}}.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "DEFAULT_TICKER",
+        "kind": 5,
+        "importPath": "{{cookiecutter.project_name}}.src.main",
+        "description": "{{cookiecutter.project_name}}.src.main",
+        "peekOfCode": "DEFAULT_TICKER = os.getenv('DEFAULT_TICKER')\n# Streamlit 페이지 설정\nst.set_page_config(layout=\"wide\")  # 페이지를 wide 모드로 설정\n# 사이드바를 숨기는 CSS\nhide_sidebar_style = \"\"\"\n        <style>\n            .css-1d391kg {display: none;}\n        </style>\n        \"\"\"\nst.markdown(hide_sidebar_style, unsafe_allow_html=True)",
+        "detail": "{{cookiecutter.project_name}}.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "hide_sidebar_style",
+        "kind": 5,
+        "importPath": "{{cookiecutter.project_name}}.src.main",
+        "description": "{{cookiecutter.project_name}}.src.main",
+        "peekOfCode": "hide_sidebar_style = \"\"\"\n        <style>\n            .css-1d391kg {display: none;}\n        </style>\n        \"\"\"\nst.markdown(hide_sidebar_style, unsafe_allow_html=True)\ndef get_market_codes():\n    url = \"https://api.upbit.com/v1/market/all\"\n    response = requests.get(url)\n    market_data = response.json()",
+        "detail": "{{cookiecutter.project_name}}.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "get_market_codes",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.stream_main",
+        "description": "{{cookiecutter.project_name}}.src.stream_main",
+        "peekOfCode": "def get_market_codes():\n    url = \"https://api.upbit.com/v1/market/all\"\n    response = requests.get(url)\n    market_data = response.json()\n    market_codes = [market['market'] for market in market_data if market['market'].startswith('KRW')]  # KRW 마켓만 필터링\n    return market_codes\ndef get_ohlcv_from_upbit(ticket='KRW-BTC'):\n    url = f\"https://api.upbit.com/v1/candles/days\"\n    querystring = {\"market\": ticket, \"count\": \"1\"}\n    response = requests.request(\"GET\", url, params=querystring)",
+        "detail": "{{cookiecutter.project_name}}.src.stream_main",
+        "documentation": {}
+    },
+    {
+        "label": "get_ohlcv_from_upbit",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.stream_main",
+        "description": "{{cookiecutter.project_name}}.src.stream_main",
+        "peekOfCode": "def get_ohlcv_from_upbit(ticket='KRW-BTC'):\n    url = f\"https://api.upbit.com/v1/candles/days\"\n    querystring = {\"market\": ticket, \"count\": \"1\"}\n    response = requests.request(\"GET\", url, params=querystring)\n    data = response.json()\n    return data\ndef get_ohlcv_list_from_upbit(ticket='KRW-BTC', length=1):\n    url = f\"https://api.upbit.com/v1/candles/days\"\n    querystring = {\"market\": ticket, \"count\": f\"{length}\"}\n    response = requests.request(\"GET\", url, params=querystring)",
+        "detail": "{{cookiecutter.project_name}}.src.stream_main",
+        "documentation": {}
+    },
+    {
+        "label": "get_ohlcv_list_from_upbit",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.stream_main",
+        "description": "{{cookiecutter.project_name}}.src.stream_main",
+        "peekOfCode": "def get_ohlcv_list_from_upbit(ticket='KRW-BTC', length=1):\n    url = f\"https://api.upbit.com/v1/candles/days\"\n    querystring = {\"market\": ticket, \"count\": f\"{length}\"}\n    response = requests.request(\"GET\", url, params=querystring)\n    data = response.json()\n    return data\ndef plot_candlestick_chart(ticket, length=20):\n    data = get_ohlcv_list_from_upbit(ticket, length=length)\n    if data:\n        df = pd.DataFrame(data)",
+        "detail": "{{cookiecutter.project_name}}.src.stream_main",
+        "documentation": {}
+    },
+    {
+        "label": "plot_candlestick_chart",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.stream_main",
+        "description": "{{cookiecutter.project_name}}.src.stream_main",
+        "peekOfCode": "def plot_candlestick_chart(ticket, length=20):\n    data = get_ohlcv_list_from_upbit(ticket, length=length)\n    if data:\n        df = pd.DataFrame(data)\n        fig = go.Figure(data=[go.Candlestick(x=df['candle_date_time_kst'],\n                        open=df['opening_price'],\n                        high=df['high_price'],\n                        low=df['low_price'],\n                        close=df['trade_price'])])\n        fig.update_layout(title=f\"{ticket} 캔들차트\", xaxis_title='날짜', yaxis_title='가격',",
+        "detail": "{{cookiecutter.project_name}}.src.stream_main",
+        "documentation": {}
+    },
+    {
+        "label": "plot_trend_daily",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.stream_main",
+        "description": "{{cookiecutter.project_name}}.src.stream_main",
+        "peekOfCode": "def plot_trend_daily(ticket):\n    data = get_ohlcv_from_upbit(ticket)\n    if data:\n        opening_price = data[0]['opening_price']\n        closing_price = data[0]['trade_price']\n        trend = closing_price - opening_price\n        fig = go.Figure()\n        fig.add_trace(go.Indicator(\n            mode=\"number+delta\",\n            value=closing_price,",
+        "detail": "{{cookiecutter.project_name}}.src.stream_main",
+        "documentation": {}
+    },
+    {
+        "label": "plot_day_max_min",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.stream_main",
+        "description": "{{cookiecutter.project_name}}.src.stream_main",
+        "peekOfCode": "def plot_day_max_min(ticket):\n    data = get_ohlcv_from_upbit(ticket)\n    if data:\n        fig = go.Figure()\n        fig.add_trace(go.Bar(x=['최고가', '최저가'],\n                             y=[data[0]['high_price'], data[0]['low_price']],\n                             marker_color=['green', 'red']))\n        fig.update_layout(title=f\"{ticket} 일일 최고가와 최저가\")\n        st.plotly_chart(fig, use_container_width=True)\ndef plot_volume_trend_daily(ticket):",
+        "detail": "{{cookiecutter.project_name}}.src.stream_main",
+        "documentation": {}
+    },
+    {
+        "label": "plot_volume_trend_daily",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.stream_main",
+        "description": "{{cookiecutter.project_name}}.src.stream_main",
+        "peekOfCode": "def plot_volume_trend_daily(ticket):\n    data = get_ohlcv_from_upbit(ticket)\n    if data:\n        high_price = data[0]['high_price']\n        low_price = data[0]['low_price']\n        volume = data[0]['candle_acc_trade_volume']\n        opening_price = data[0]['opening_price']\n        closing_price = data[0]['trade_price']\n        trend = \"상승\" if closing_price > opening_price else \"하락\"\n        card_html = \"\"\"",
+        "detail": "{{cookiecutter.project_name}}.src.stream_main",
+        "documentation": {}
+    },
+    {
+        "label": "plot_price_width_volume_current_trend",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.stream_main",
+        "description": "{{cookiecutter.project_name}}.src.stream_main",
+        "peekOfCode": "def plot_price_width_volume_current_trend(ticket):\n    data = get_ohlcv_from_upbit(ticket)\n    if data:\n        high_price = data[0]['high_price']\n        low_price = data[0]['low_price']\n        volume = data[0]['candle_acc_trade_volume']\n        fig = go.Figure(data=[\n            go.Bar(name='가격 범위', x=['최고가', '최저가'], y=[high_price, low_price]),\n            go.Bar(name='거래량', x=['거래량'], y=[volume])\n        ])",
+        "detail": "{{cookiecutter.project_name}}.src.stream_main",
+        "documentation": {}
+    },
+    {
+        "label": "display_show_table",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.stream_main",
+        "description": "{{cookiecutter.project_name}}.src.stream_main",
+        "peekOfCode": "def display_show_table(ticket):\n    # CSS를 사용하여 컬럼 너비 조정\n    st.markdown(\n        \"\"\"\n        <style>\n        .dataframe {\n            margin-top:10px;\n            width: 100%;\n        }\n        .dataframe th, .dataframe td {",
+        "detail": "{{cookiecutter.project_name}}.src.stream_main",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "{{cookiecutter.project_name}}.src.stream_main",
+        "description": "{{cookiecutter.project_name}}.src.stream_main",
+        "peekOfCode": "def main():\n    st.title(\"Day Trend\")\n    #ticket = st.text_input(\"티켓을 입력하세요\", value='KRW-BTC')\n    # 업비트에서 티켓 목록 가져오기\n    market_codes = get_market_codes()\n    # 티켓 선택을 위한 드롭다운 메뉴 생성\n    ticket = st.sidebar.selectbox(\"티켓을 선택하세요\", market_codes, index=4)\n    if ticket:\n        # 컬럼 분리 설정\n        col1,col2 = st.columns(2)",
+        "detail": "{{cookiecutter.project_name}}.src.stream_main",
+        "documentation": {}
+    },
+    {
+        "label": "hide_sidebar_style",
+        "kind": 5,
+        "importPath": "{{cookiecutter.project_name}}.src.stream_main",
+        "description": "{{cookiecutter.project_name}}.src.stream_main",
+        "peekOfCode": "hide_sidebar_style = \"\"\"\n        <style>\n            .css-1d391kg {display: none;}\n        </style>\n        \"\"\"\nst.markdown(hide_sidebar_style, unsafe_allow_html=True)\ndef get_market_codes():\n    url = \"https://api.upbit.com/v1/market/all\"\n    response = requests.get(url)\n    market_data = response.json()",
+        "detail": "{{cookiecutter.project_name}}.src.stream_main",
+        "documentation": {}
+    }
+]

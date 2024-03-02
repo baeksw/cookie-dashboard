@@ -1,18 +1,14 @@
+import os 
 import streamlit as st
 import requests
 import pandas as pd
 import plotly.graph_objs as go
 
+DEFAULT_TICKER = os.getenv('DEFAULT_TICKER')
+
 # Streamlit 페이지 설정
 st.set_page_config(layout="wide")  # 페이지를 wide 모드로 설정
 
-# HTML 메타 태그를 사용하여 페이지를 10초마다 자동 새로고침
-st.markdown(
-"""
-<meta http-equiv="refresh" content="10">
-""",
-unsafe_allow_html=True
-)
 # 사이드바를 숨기는 CSS
 hide_sidebar_style = """
         <style>
@@ -171,8 +167,13 @@ def main():
     # 업비트에서 티켓 목록 가져오기
     market_codes = get_market_codes()
 
+    current_idx = 0
+    for idx, value in enumerate(market_codes):
+        if DEFAULT_TICKER == value:
+            current_idx = idx
+
     # 티켓 선택을 위한 드롭다운 메뉴 생성
-    ticket = st.sidebar.selectbox("티켓을 선택하세요", market_codes, index=4)
+    ticket = st.sidebar.selectbox("티켓을 선택하세요", market_codes, index=current_idx)
 
     if ticket:
 

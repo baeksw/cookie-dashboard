@@ -1,10 +1,52 @@
 version: '3'
 
 services:
-  dash:
+  web:
     build: ./src
-    command: streamlit run --server.address=0.0.0.0 --server.port=8000 main.py
+    entrypoint: [ "streamlit" , "run" ]
+    command: [ "--server.address", "0.0.0.0", "--server.port", "8000", "main.py" ] 
+    environment:
+      - DEFAULT_TICKER1=KRW-XRP
+      - DEFAULT_TICKER=KRW-SHIB
     volumes:
       - ./src:/app
     ports:
       - "8000:8000"
+  xrp:
+    build: ./src
+    entrypoint: [ "streamlit" , "run" ]
+    command: [ "--server.address", "0.0.0.0", "--server.port", "8000", "main.py" ] 
+    environment:
+      - DEFAULT_TICKER=KRW-XRP
+    volumes:
+      - ./src:/app
+    ports:
+      - "9010:8000"
+
+  shib:
+    build: ./src
+    entrypoint: [ "streamlit" , "run" ]
+    command: [ "--server.address", "0.0.0.0", "--server.port", "8000", "main.py" ] 
+    environment:
+      - DEFAULT_TICKER=KRW-SHIB
+    volumes:
+      - ./src:/app
+    ports:
+      - "9000:8000"
+
+  bch:
+    build: ./src
+    entrypoint: [ "streamlit" , "run" ]
+    command: [ "--server.address", "0.0.0.0", "--server.port", "8000", "main.py" ] 
+    environment:
+      - DEFAULT_TICKER=KRW-BCH
+    volumes:
+      - ./src:/app
+    ports:
+      - "9090:8000"
+
+  view:
+    build: ./src
+    command: python gui.py
+    volumes:
+      - ./src:/app
